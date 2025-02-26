@@ -2,15 +2,21 @@
 const nextConfig = {
   reactStrictMode: true,
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
-  // For AWS Amplify hosting
+  // This is crucial - forces static export
   output: 'export',
-  // Images are handled statically in this project
+  // Disable image optimization since we're doing static export
   images: {
     unoptimized: true
+  },
+  // Add this to ensure Next.js knows it's a static export
+  distDir: 'out',
+  // Explicitly disable server features
+  experimental: {
+    appDir: false,
+    serverComponents: false,
+    serverActions: false
   }
 }
 
