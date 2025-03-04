@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>digg reboot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #1839a6;
+            --text-color: white;
+            --button-bg: #ffffff;
+            --button-text: #2064db;
+            --button-hover: #f0f0f0;
+            --digg-yellow: #ffffd4;
+            --digg-blue: #2064db;
+        }
+
+        .dark-mode {
+            --bg-color: #000000;
+            --text-color: white;
+            --button-bg: #333333;
+            --button-text: white;
+            --button-hover: #444444;
+        }
+
+        body, html {
+            height: 100%;
+            width: 100%;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease;
+        }
+
+        .container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1; /* Ensure content stays above the animation */
+        }
+
+        .logo {
+            margin-bottom: 2rem;
+            /* Adjust size as needed */
+            max-width: 150px;
+        }
+
+        .main-heading {
+            font-size: 33px;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            height: 60px; /* Fixed height to prevent layout shift during typing */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .sub-heading {
+            font-size: 12px;
+            font-weight: 400;
+            max-width: 600px;
+	    margin-top: 2rem;
+	    margin-bottom: 2rem;
+	    color: #ddd;
+        }
+
+        .email-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 2rem;
+        }
+
+        .email-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            border-radius: 50px;
+            outline: none;
+            padding-right: 130px; /* Space for the button */
+        }
+
+        .email-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .signup-button {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            padding: 13px 20px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .signup-button:hover {
+            background-color: var(--button-hover);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .logo-container {
+            margin-bottom: 2rem;
+            /* Apply white filter to SVG */
+            filter: brightness(0) invert(1);
+            max-width: 150px;
+        }
+
+        /* Digg Button Styles */
+        .digg-button-container {
+            /* margin-top: 2rem; */
+            width: 250px;
+            height: 250px;
+            position: relative;
+        }
+
+        .digg-card {
+            width: 100%;
+            height: 100%;
+            background-color: var(--digg-yellow);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 20px;
+        }
+
+        .digg-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Counter display with digit roller */
+        .counter-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+            margin: 20px 0;
+        }
+
+        .digit-roller {
+            width: 60px;
+            height: 100px;
+            margin: 0 -3px; /* Tighten spacing between digits */
+            position: relative;
+            overflow: hidden;
+            background-color: var(--digg-yellow);
+        }
+
+        /* The fixed digit that's shown */
+        .current-digit {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 90px;
+            font-weight: 800;
+            color: #000;
+            transition: transform 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        /* The new digit that rolls in */
+        .new-digit {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 90px;
+            font-weight: 800;
+            color: #000;
+            transform: translateY(-100%);
+            transition: transform 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        /* Animation classes */
+        .animate-current {
+            transform: translateY(100%);
+        }
+
+        .animate-new {
+            transform: translateY(0);
+        }
+
+        .logo-badge {
+            width: 150px;
+            height: 60px;
+            background-color: white;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo-badge img {
+            width: 165px;
+            filter: none;
+        }
+
+        .pulse {
+            animation: pulse-animation 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+        }
+
+        @keyframes pulse-animation {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 255, 212, 0.7);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 0 20px rgba(255, 255, 212, 0);
+                transform: scale(1.05);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 255, 212, 0);
+                transform: scale(1);
+            }
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 3px;
+            background-color: var(--text-color);
+            animation: blink 1s infinite;
+            margin-left: 5px;
+            height: 42px;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button id="theme-toggle" class="theme-toggle">🌓</button>
+    <div class="container">
+        <div class="logo-container">
+            <img src="logo.svg" alt="Logo" class="logo">
+        </div>
+
+        <div class="main-heading">
+            <span id="typed-text"></span>
+            <span class="cursor"></span>
+        </div>
+
+        <p class="sub-heading">Sign up to get early access when invites go live..</p>
+
+        <div class="email-container">
+            <input type="email" id="email" class="email-input" placeholder="Add an email address">
+            <button class="signup-button">Sign Up</button>
+        </div>
+
+        <!-- Digg Button Container -->
+        <div class="digg-button-container">
+            <div id="digg-card" class="digg-card">
+                <div id="counter-container" class="counter-container">
+                    <!-- Digit rollers will be generated here -->
+                </div>
+                <div class="logo-badge">
+                    <img src="CTA.png" alt="Digg Logo">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Typing Animation Logic
+        const typingTexts = [
+            "The homepage of the internet, now with superpowers",
+            "Rediscover the internet again",
+            "Rebooting Digg. Old vibes, new intelligence",
+            "Community at the core, intelligence at the edges",
+            "Where user revolts become the company roadmap"
+        ];
+
+        let textIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typingSpeed = 100; // Milliseconds between each character
+        let pauseDuration = 1000; // 1 second pause at the end
+        const typedTextElement = document.getElementById('typed-text');
+
+
+	function poll() {
+		    // Generate random polling interval between 1-5 seconds
+		    const randomInterval = (Math.random() * 4 + 1) * 1000;
+		    
+		    // Clear any existing timeout
+		    if (pollTimeout) clearTimeout(pollTimeout);
+		    
+		    // Set up the next poll
+		    pollTimeout = setTimeout(() => {
+		      fetch(COUNT_URL)
+			.then(response => response.json())
+			.then(data => {
+			  // Only update if the count has changed
+			  if (data.count !== count) {
+			    updateCounter(data.count);
+			  }
+			  poll(); // Schedule next poll
+			})
+			.catch(error => {
+			  console.error('Error polling count:', error);
+			  poll(); // Try again even on error
+			});
+		    }, randomInterval);
+		  }
+
+
+
+
+        function typeText() {
+            const currentText = typingTexts[textIndex];
+
+            if (isDeleting) {
+                // Backspacing
+                typedTextElement.textContent = currentText.substring(0, charIndex);
+                charIndex--;
+                typingSpeed = 30; // Faster when deleting
+            } else {
+                // Typing
+                typedTextElement.textContent = currentText.substring(0, charIndex + 1);
+                charIndex++;
+                typingSpeed = 100; // Normal typing speed
+            }
+
+            // If we're done typing the full text
+            if (!isDeleting && charIndex === currentText.length) {
+                // Pause before starting to delete
+                isDeleting = false;
+                setTimeout(() => {
+                    isDeleting = true;
+                }, pauseDuration);
+            }
+
+            // If we've deleted all characters
+            if (isDeleting && charIndex < 0) {
+                isDeleting = false;
+                // Move to next text in the array
+                textIndex = (textIndex + 1) % typingTexts.length;
+                charIndex = 0;
+            }
+
+            // Schedule the next frame
+            setTimeout(typeText, typingSpeed);
+        }
+
+	// Function to poll for the current count
+	function startPolling() {
+	  if (isPolling) return;
+	  isPolling = true;
+	  
+	  	  
+	  // Start the polling cycle
+	  poll();
+	}
+
+        // Digg Button Click Counter Animation
+	let testMode = true;
+	let COUNT_URL = 'https://w473mpjyh6.execute-api.us-east-2.amazonaws.com/prod/count';
+	let INCREMENT_URL = 'https://w473mpjyh6.execute-api.us-east-2.amazonaws.com/prod/digg';
+	let isPolling = false;
+	let pollTimeout;
+	let lastUpdatedTime = 0;
+        const diggCard = document.getElementById('digg-card');
+        const counterContainer = document.getElementById('counter-container');
+        let isAnimating = false;
+        let digitRollers = []; // Will store references to all digit rollers
+        
+        // Function to create a single digit display
+        function createDigitRoller(digit, position) {
+            const roller = document.createElement('div');
+            roller.className = 'digit-roller';
+            roller.dataset.position = position;
+            roller.dataset.digit = digit;
+            
+            // Current visible digit
+            const currentDigit = document.createElement('div');
+            currentDigit.className = 'current-digit';
+            currentDigit.textContent = digit;
+            
+            roller.appendChild(currentDigit);
+            
+            return roller;
+        }
+        
+        // Initialize counter display
+        function initializeCounter() {
+            counterContainer.innerHTML = '';
+            digitRollers = [];
+            
+            // Convert count to string and create a roller for each digit
+            const countStr = count.toString();
+            for (let i = 0; i < countStr.length; i++) {
+                const digit = parseInt(countStr[i]);
+                const roller = createDigitRoller(digit, i);
+                counterContainer.appendChild(roller);
+                digitRollers.push(roller);
+            }
+        }
+        
+        // Function to animate a single digit change
+        function animateDigitChange(rollerElement, newDigit) {
+            // Get current digit
+            const currentDigitElement = rollerElement.querySelector('.current-digit');
+            const currentDigit = parseInt(rollerElement.dataset.digit);
+            
+            // Create new digit element that will slide in from top
+            const newDigitElement = document.createElement('div');
+            newDigitElement.className = 'new-digit';
+            newDigitElement.textContent = newDigit;
+            
+            // Add the new digit to the DOM
+            rollerElement.appendChild(newDigitElement);
+            
+            // Force a reflow to ensure the new element is properly positioned above
+            void rollerElement.offsetWidth;
+            
+            // Start the animation by adding classes
+            currentDigitElement.classList.add('animate-current');
+            newDigitElement.classList.add('animate-new');
+            
+            // After animation completes, clean up
+            setTimeout(() => {
+                // Update data attribute
+                rollerElement.dataset.digit = newDigit;
+                
+                // Remove the old digit element and animation classes
+                rollerElement.removeChild(currentDigitElement);
+                newDigitElement.classList.remove('animate-new');
+                
+                // Make the new digit the current digit
+                newDigitElement.className = 'current-digit';
+            }, 500); // Match transition time in CSS
+        }
+        
+        // Update counter to a new value with animation
+        function updateCounter(newValue) {
+            const newValueStr = newValue.toString();
+            const oldValueStr = count.toString();
+            
+            // If number of digits changed, reinitialize the counter
+            if (newValueStr.length !== oldValueStr.length) {
+                count = newValue;
+                initializeCounter();
+                return;
+            }
+            
+            // Update each digit that has changed
+            for (let i = 0; i < newValueStr.length; i++) {
+                const newDigit = parseInt(newValueStr[i]);
+                const oldDigit = parseInt(oldValueStr[i]);
+                
+                if (newDigit !== oldDigit) {
+                    // Get the digit roller for this position
+                    const roller = digitRollers[i];
+                    
+                    // Animate the change
+                    animateDigitChange(roller, newDigit);
+                }
+            }
+            
+            // Update the current count
+            count = newValue;
+        }
+
+        // Handle the digg card click
+        //diggCard.addEventListener('click', function() {
+        //    // Only proceed if we're not already animating
+        //    if (isAnimating) return;
+        //    isAnimating = true;
+        //    
+        //    // Add pulse animation to the card
+        //    diggCard.classList.add('pulse');
+        //    
+        //    // Increment counter and update display
+        //    updateCounter(count + 1);
+        //    
+        //    // Reset animation flag after animation completes
+        //    setTimeout(() => {
+        //        diggCard.classList.remove('pulse');
+        //        isAnimating = false;
+        //    }, 800);
+        //});
+
+	diggCard.addEventListener('click', function() {
+	  if (pollTimeout) clearTimeout(pollTimeout);
+	  pollTimeout = setTimeout(poll, 3000); // force a 3 second wait before polling after the first click
+	  // Check if user has already clicked and we're not in test mode
+	  if (localStorage.getItem('digg_clicked') === 'true' && !testMode) {
+	    // User already clicked, maybe show a message
+	    alert('You have already voted. Thanks for your support!');
+	    return;
+	  }
+	  
+	  // Only proceed if we're not already animating
+	  if (isAnimating) return;
+	  
+	  // Add pulse animation to the card immediately for feedback
+	  diggCard.classList.add('pulse');
+	  isAnimating = true;
+	  
+	  // First, get the latest count from the server
+	  fetch(COUNT_URL)
+	    .then(response => response.json())
+	    .then(data => {
+	      const serverCount = data.count;
+	      
+	      // Use the server count if it's higher than our local count
+	      const currentCount = Math.max(count, serverCount);
+	      
+	      // Optimistic update (immediately show increment to feel responsive)
+	      const optimisticCount = currentCount + 1;
+	      updateCounter(optimisticCount);
+	      
+	      // Now send increment request to API
+	      return fetch(INCREMENT_URL, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' }
+	      });
+	    })
+	    .then(response => response.json())
+	    .then(data => {
+	      // Update with the real server count
+	      updateCounter(data.count);
+	      
+	      // Mark that this user has clicked in localStorage
+	      if (!testMode) {
+		localStorage.setItem('digg_clicked', 'true');
+	      }
+	      
+	      // Reset animation state
+	      setTimeout(() => {
+		diggCard.classList.remove('pulse');
+		isAnimating = false;
+	      }, 800);
+	    })
+	    .catch(error => {
+	      console.error('Error with counter operations:', error);
+	      // Still reset animation even on error
+	      diggCard.classList.remove('pulse');
+	      isAnimating = false;
+	    });
+	});
+
+    // Initialize on page load
+    window.onload = function() {
+        const diggCard = document.getElementById('digg-card');
+        const counterContainer = document.getElementById('counter-container');
+        
+	// Fetch initial count
+        fetch(COUNT_URL)
+            .then(response => response.json())
+            .then(data => {
+                count = data.count;
+                initializeCounter();
+                
+                // Start polling for updates
+                startPolling();
+                
+                // Start typing animation
+                setTimeout(typeText, 500);
+            })
+            .catch(error => {
+                console.error('Error fetching initial count:', error);
+                // Initialize with default value on error
+                initializeCounter();
+                setTimeout(typeText, 500);
+            });
+        
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            // Save preference to localStorage
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // Check for saved theme preference
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    };
+
+        // Email signup functionality
+        document.querySelector('.signup-button').addEventListener('click', function() {
+            const emailInput = document.querySelector('.email-input');
+            const email = emailInput.value;
+            const button = this;
+            const originalButtonText = button.textContent;
+
+            if (validateEmail(email)) {
+                // Disable button and show loading state
+                button.disabled = true;
+                button.textContent = 'Submitting...';
+
+                const clientData = {
+                    email: email,
+                    userAgent: navigator.userAgent,
+                    language: navigator.language,
+                    screenWidth: window.screen.width,
+                    screenHeight: window.screen.height,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    referrer: document.referrer || 'direct',
+                };
+
+                console.log(clientData);
+                // Send to API Gateway Lambda
+                fetch('https://2t2rkg32gc.execute-api.us-east-2.amazonaws.com/prod/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ clientData })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Success message
+                        const signupContainer = emailInput.closest('.signup-container');
+                        const formContainer = emailInput.closest('form') || emailInput.closest('div');
+
+                        // Hide the form
+                        if (formContainer) formContainer.style.display = 'none';
+
+                        // Create and show success message
+                        const successMsg = document.createElement('div');
+                        successMsg.className = 'success-message';
+                        successMsg.innerHTML = '<p>Thank you for signing up! We will be in touch soon.</p>';
+
+                        // Add success message to the page
+                        if (signupContainer) {
+                            signupContainer.appendChild(successMsg);
+                        } else {
+                            formContainer.parentNode.appendChild(successMsg);
+                        }
+                    } else {
+                        // Error from server
+                        alert(data.message || 'Something went wrong. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('There was an error signing up. Please try again.');
+                })
+                .finally(() => {
+                    // Reset button state
+                    button.disabled = false;
+                    button.textContent = originalButtonText;
+                });
+            } else {
+                alert('Please enter a valid email address.');
+            }
+        });
+
+        function validateEmail(email) {
+            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        }
+    </script>
+</body>
+</html>
