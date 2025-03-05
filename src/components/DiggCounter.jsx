@@ -114,8 +114,10 @@ const DiggCounter = ({ onDiggClick, onCountUpdate }) => {
     
     // Trigger the glow expansion animation
     setGlowExpanding(true);
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setGlowExpanding(false);
+
+      return () => clearTimeout(timeout);
     }, 2000); // Match animation duration
     
     // Trigger particle explosion
@@ -126,6 +128,8 @@ const DiggCounter = ({ onDiggClick, onCountUpdate }) => {
     // Reset the explosion state after a short delay to prepare for next click
     setTimeout(() => {
       setParticleExploding(false);
+
+      return () => clearTimeout(pollTimeout.current);
     }, 100);
     
     fetch(COUNT_URL)

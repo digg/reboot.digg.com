@@ -40,8 +40,8 @@ const GradientBackground = ({ children, hovering, expanding }) => {
       <motion.div
         className={`gradient-effect ${expanding ? 'glow-expand' : ''}`}
         animate={{
-          opacity: hovering ? 0.6 : 0,
-          scale: expanding ? 1.5 : 1, // Apply scale directly in animation for smoother transition
+          opacity: hovering ? 1 : 0,
+          scale: expanding ? 2 : 1, // Apply scale directly in animation for smoother transition
         }}
         transition={{ 
           opacity: { duration: 0.3 },
