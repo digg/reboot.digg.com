@@ -97,13 +97,14 @@ html,body {
 
 .gradient-effect {
   position: absolute;
-  top: -13px;
-  left: -13px;
-  right: -13px;
-  bottom: -13px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   border-radius: 24px;
   z-index: 0;
   filter: blur(48px);
+  -webkit-filter: blur(48px);
   opacity: 0;
   background: linear-gradient(90deg, rgba(255, 0, 212, 0.8), rgba(0, 179, 255, 0.8), rgba(0, 240, 184, 0.8), rgba(255, 0, 212, 0.8));
   background-size: 300% 100%;
