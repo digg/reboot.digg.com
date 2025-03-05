@@ -105,12 +105,16 @@ const EmailSignup = ({ onSignupSuccess, currentCount }) => {
   };
   
   return (
-    <div 
+    <form
       className="email-form"
       ref={formRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
+      <div 
+        className="input-border"
+        style={{ opacity: (isHovering || isFocused) ? 1 : 0 }}
+      />
       <input
         type="email"
         className="email-input"
@@ -126,18 +130,15 @@ const EmailSignup = ({ onSignupSuccess, currentCount }) => {
           }
         }}
       />
-      <div 
-        className="input-border"
-        style={{ opacity: (isHovering || isFocused) ? 1 : 0 }}
-      />
       <button
         className="signup-button"
         onClick={handleSubmit}
         disabled={isSubmitting}
+        type="submit"
       >
         {isSubmitting ? 'Submitting...' : 'Sign up'}
       </button>
-    </div>
+    </form>
   );
 };
 

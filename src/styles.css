@@ -320,6 +320,9 @@ h1 {
   background-color: #2064DC;
   color: white;
 }
+.email-input:focus + .signup-button:hover {
+  background-color: #184DAE;
+}
 
 .email-input::placeholder {
   color: rgba(255, 255, 255, 0.7);
