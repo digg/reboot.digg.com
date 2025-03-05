@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import NumberFlowWrapper from './NumberFlowWrapper';
 import GradientBackground from './GradientBackground';
+import ParticleExplosion from './ParticleExplosion';
 import config from '../config';
 
-const DiggCounter = ({ onDiggClick }) => {
+const DiggCounter = ({ onDiggClick, onCountUpdate }) => {
   const [count, setCount] = useState(830);
   const [isHovering, setIsHovering] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [glowExpanding, setGlowExpanding] = useState(false);
+  const [particleKey, setParticleKey] = useState(0); // Use a key to force re-render
+  const [particleExploding, setParticleExploding] = useState(false);
   const isPolling = useRef(false);
   const pollTimeout = useRef(null);
   const isMobile = useRef(false);
@@ -34,24 +38,17 @@ const DiggCounter = ({ onDiggClick }) => {
       });
       
     return () => {
-      if (pollTimeout.current) {
-        clearTimeout(pollTimeout.current);
-      }
+      if (pollTimeout.current) clearTimeout(pollTimeout.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
-  const [useAlternative, setUseAlternative] = useState(false);
 
   useEffect(() => {
-    // Try the primary implementation first, but fallback to the alternative if it fails
-    try {
-      const test = <NumberFlowWrapper value={1} />;
-    } catch (error) {
-      console.log('Falling back to alternative NumberFlow implementation');
-      setUseAlternative(true);
-    }
-  }, []);
+  // Call onCountUpdate whenever count changes
+  if (typeof onCountUpdate === 'function') {
+    onCountUpdate(count);
+  }
+  }, [count, onCountUpdate]);
   
   const handleTouchStart = () => {
     // On mobile, once we set hovering to true, it stays that way
@@ -110,9 +107,26 @@ const DiggCounter = ({ onDiggClick }) => {
     
     pollTimeout.current = setTimeout(poll, 3000);
     
-    if (isAnimating) return;
+    // Remove the animation check to allow rapid clicking
+    // if (isAnimating) return;
     
     setIsAnimating(true);
+    
+    // Trigger the glow expansion animation
+    setGlowExpanding(true);
+    setTimeout(() => {
+      setGlowExpanding(false);
+    }, 2000); // Match animation duration
+    
+    // Trigger particle explosion
+    // Increment the key to force a complete re-render of particle component
+    setParticleKey(prevKey => prevKey + 1);
+    setParticleExploding(true);
+    
+    // Reset the explosion state after a short delay to prepare for next click
+    setTimeout(() => {
+      setParticleExploding(false);
+    }, 100);
     
     fetch(COUNT_URL)
       .then(response => response.json())
@@ -133,21 +147,20 @@ const DiggCounter = ({ onDiggClick }) => {
         setCount(data.count);
         
         // Call the onDiggClick prop to trigger headline change
-        // Only call once and only if the function exists
+        // Only call if the function exists
         if (typeof onDiggClick === 'function') {
           onDiggClick();
         }
         
-        setTimeout(() => {
-          setIsAnimating(false);
-        }, 100);
+        // Allow clicks to be processed immediately
+        setIsAnimating(false);
       })
       .catch(error => {
         console.error('Error with counter operations:', error);
         setIsAnimating(false);
       });
   };
-  
+
   return (
     <div 
       className="digg-container"
@@ -155,7 +168,10 @@ const DiggCounter = ({ onDiggClick }) => {
       onMouseLeave={handleMouseLeave}
       onTouchStart={handleTouchStart}
     >
-      <GradientBackground hovering={isHovering}>
+      <GradientBackground hovering={isHovering} expanding={glowExpanding}>
+        {/* Particle explosion with key to force re-render */}
+        <ParticleExplosion key={particleKey} exploding={particleExploding} />
+        
         <div 
           className={`digg-box ${isAnimating ? 'bounce' : ''}`}
           onClick={handleDiggClick}

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import config from '../config';
 
-const EmailSignup = ({ onSignupSuccess }) => {
+const EmailSignup = ({ onSignupSuccess, currentCount }) => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
@@ -41,19 +41,7 @@ const EmailSignup = ({ onSignupSuccess }) => {
     }
     
     setIsSubmitting(true);
-    
-    // If simulating success, bypass the API call
-    if (config.SIMULATE_API_SUCCESS) {
-      setTimeout(() => {
-        console.log('Simulating successful API response');
-        if (onSignupSuccess) {
-          onSignupSuccess();
-        }
-        setIsSubmitting(false);
-      }, 500); // Add a small delay to simulate network request
-      return;
-    }
-    
+
     const clientData = {
       email: email,
       userAgent: navigator.userAgent,
@@ -62,7 +50,22 @@ const EmailSignup = ({ onSignupSuccess }) => {
       screenHeight: window.screen.height,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       referrer: document.referrer || 'direct',
+      current_digg_count: currentCount || 0
     };
+    
+    // If simulating success, bypass the API call
+    if (config.SIMULATE_API_SUCCESS) {
+      setTimeout(() => {
+        console.log('Simulating successful API response with data:', {
+          data: clientData
+        });
+        if (onSignupSuccess) {
+          onSignupSuccess();
+        }
+        setIsSubmitting(false);
+      }, 500); // Add a small delay to simulate network request
+      return;
+    }
     
     fetch(config.URLS.SUBSCRIBE_URL, {
       method: 'POST',

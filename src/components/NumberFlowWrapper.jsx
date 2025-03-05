@@ -12,12 +12,12 @@ const NumberFlowWrapper = ({ value, className, ...props }) => {
     // Custom formatting to match requirements
     format: {
       // Only use compact notation (K) for values >= 10000
-      notation: value >= 10000 ? 'compact' : 'standard',
+      notation: value >= 1000000 ? 'compact' : 'standard',
       // Don't use grouping separator (commas)
       useGrouping: false,
       // For compact notation, show 1 decimal place
-      maximumFractionDigits: value >= 10000 ? 1 : 0,
-      minimumFractionDigits: value >= 10000 ? 1 : 0
+      maximumFractionDigits: value >= 1000000 ? 1 : 0,
+      minimumFractionDigits: value >= 1000000 ? 1 : 0
     }
   };
 

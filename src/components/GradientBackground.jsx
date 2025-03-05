@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-const GradientBackground = ({ children, hovering }) => {
+const GradientBackground = ({ children, hovering, expanding }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
   
@@ -30,7 +30,7 @@ const GradientBackground = ({ children, hovering }) => {
       }
     };
   }, [hovering]);
-  
+
   return (
     <div className="gradient-container" ref={containerRef}>
       {/* The actual content */}
@@ -38,12 +38,15 @@ const GradientBackground = ({ children, hovering }) => {
       
       {/* Gradient background */}
       <motion.div
-        className="gradient-effect"
+        className={`gradient-effect ${expanding ? 'glow-expand' : ''}`}
         animate={{
           opacity: hovering ? 0.6 : 0,
-          scale: hovering ? 1.1 : 1,
+          scale: expanding ? 1.5 : 1, // Apply scale directly in animation for smoother transition
         }}
-        transition={{ duration: 0.3 }}
+        transition={{ 
+          opacity: { duration: 0.3 },
+          scale: { duration: expanding ? 2 : 0, ease: "easeInOut" }
+        }}
       />
     </div>
   );

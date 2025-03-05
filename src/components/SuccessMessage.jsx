@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Lottie from 'lottie-react';
+import { Check } from 'lucide-react';
+
 
 const SuccessMessage = () => {
   const [lottieData, setLottieData] = useState(null);
@@ -27,8 +29,12 @@ const SuccessMessage = () => {
   
   return (
     <div className="success-message-container">
-      <p className="success-message">Thank you for signing up! We will be in touch soon.</p>
-      
+      <div className="success-text-container">
+        <div className="checkmark-circle">
+          <Check color="white" size={16} strokeWidth={3} />
+        </div>
+        <p className="success-message">You're added! We'll be in touch soon.</p>
+      </div>  
       {lottieData && (
         <div className="lottie-container">
           <Lottie 
