@@ -70,25 +70,27 @@ function App() {
     <div className="app-container">
       <Logo />
       <DiggCounter onDiggClick={handleDiggClick} onCountUpdate={handleCountUpdate}/>
-      
-      <HeadlineManager 
-        headlines={headlines}
-        currentIndex={headlineIndex}
-        shouldChange={shouldChangeHeadline}
-        onComplete={handleAnimationComplete}
-      />
-      
-      {isSignupSuccess ? (
-        <SuccessMessage />
-      ) : (
-        <>
-          <p className="subtitle">Sign up to get early access when invites go live.</p>
-          <EmailSignup 
-            onSignupSuccess={handleSignupSuccess}
-            currentCount={diggCount} 
-          />
-        </>
-      )}
+
+      <div className="app-content">
+        <HeadlineManager
+          headlines={headlines}
+          currentIndex={headlineIndex}
+          shouldChange={shouldChangeHeadline}
+          onComplete={handleAnimationComplete}
+        />
+
+        {isSignupSuccess ? (
+          <SuccessMessage />
+        ) : (
+          <>
+            <p className="subtitle">Sign up to get early access when invites go live.</p>
+            <EmailSignup
+              onSignupSuccess={handleSignupSuccess}
+              currentCount={diggCount}
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 }

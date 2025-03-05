@@ -10,8 +10,8 @@
 body {
   background-color: #000;
   color: #fff;
-  min-height: 100vh;
-  padding: 20px;
+  min-height: 100dvh;
+  padding: 0;
 }
 
 .app-container {
@@ -20,29 +20,31 @@ body {
   align-items: center;
   position: relative;
   justify-content: center;
-  min-height: 100vh;
+  min-height: 100%;
   padding: 15px; /* Reduced padding */
+  gap: 64px;
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    gap: 32px;
+  }
 }
 
 .logo {
   width: 120px;
-  position: fixed;
   top: 48px;
   z-index: 5;
-  /* margin-bottom: 40px; /* Reduced from 60px */
 }
 
 @media (max-height: 768px) {
   .logo {
-    position: fixed; /* Fall back to normal flow */
     top: 28px;
   }
 }
 
 /* ===== DiggCounter Component ===== */
 .digg-container {
-  margin-top: 120px;
-  margin-bottom: 85px; /* Reduced from 80px */
   position: relative;
   width: 104px;
   height: 112px;
@@ -54,10 +56,24 @@ body {
 /* Add responsive adjustments */
 @media (max-width: 768px) {
   .digg-container {
-    margin-top: 90px; /* Remove extra spacing when logo is in normal flow */
-    margin-bottom: 55px;
     width: 90px;
     height: 100px;
+  }
+}
+
+.app-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .app-content {
+    gap: 16px;
   }
 }
 
@@ -473,6 +489,7 @@ h1 {
 @media (max-width: 768px) {
   h1 {
     font-size: 32px; /* Further reduced for mobile */
+    flex: 1;
   }
   .subtitle {
     font-size: 16px;
